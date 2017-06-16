@@ -44,6 +44,7 @@ public class FileManagingController {
             IOUtils.copy(fileManagingService.serveFile(bucketName, keyName), response.getOutputStream());
         } catch (IOException e) {
             log.error(e.getMessage());
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity(HttpStatus.OK);
     }
