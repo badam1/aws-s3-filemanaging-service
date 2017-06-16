@@ -30,8 +30,8 @@ public class FileManagingController {
         this.fileManagingService = fileManagingService;
     }
 
-    @PostMapping("/fileUpload")
-    public ResponseEntity uploadFile(@RequestBody MultipartFile file, @RequestParam String bucketName, @RequestParam String keyName) {
+    @PostMapping("/fileUpload/{bucketName}/{keyName}")
+    public ResponseEntity uploadFile(@RequestBody MultipartFile file, @PathVariable String bucketName, @PathVariable String keyName) {
         log.info("upload file to bucket/keyName {} {} {}", file.getOriginalFilename(), bucketName, keyName);
         return fileManagingService.storeFile(file, bucketName, keyName);
     }
