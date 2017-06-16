@@ -36,8 +36,8 @@ public class FileManagingController {
         return fileManagingService.storeFile(file, bucketName, keyName);
     }
 
-    @GetMapping("/fileDownload")
-    public ResponseEntity downloadFile(@RequestParam String bucketName, @RequestParam String keyName, HttpServletResponse response) {
+    @GetMapping("/fileDownload/{bucketName}/{keyName}")
+    public ResponseEntity downloadFile(@PathVariable String bucketName, @PathVariable String keyName, HttpServletResponse response) {
         log.info("download file bucketName/keyName {} {}", bucketName, keyName);
         try {
             addDownloadResponseHeaders(response, keyName);
