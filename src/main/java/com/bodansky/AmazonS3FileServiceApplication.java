@@ -17,12 +17,12 @@ public class AmazonS3FileServiceApplication {
     }
 
     @Bean
-    public AmazonS3 amazonS3() {
+    public static AmazonS3 amazonS3() {
         return AmazonS3ClientBuilder.defaultClient();
     }
 
     @Bean
-    public ResourceLoaderBeanPostProcessor resourceLoaderBeanPostProcessor() {
+    public static ResourceLoaderBeanPostProcessor resourceLoaderBeanPostProcessor() {
         return new ResourceLoaderBeanPostProcessor(amazonS3());
     }
 }
