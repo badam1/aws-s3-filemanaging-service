@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.io.IOException;
 
 @RestController
@@ -30,14 +30,16 @@ public class FileManagingController {
         this.fileManagingService = fileManagingService;
     }
 
-    @PostMapping("/fileUpload/{bucketName}/{keyName}")
-    public ResponseEntity uploadFile(@RequestBody MultipartFile file, @PathVariable String bucketName, @PathVariable String keyName) {
-        log.info("upload file to bucket/keyName {} {} {}", file.getOriginalFilename(), bucketName, keyName);
+    @PostMapping("/fileUpload/{bucketName}/{userId}/{fileName:.+}")
+    public ResponseEntity uploadFile(@RequestBody File file, @PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName) {
+        String keyName = userId + "/" + fileName;
+        log.info("upload file to bucket/keyName {} {} {}", file.getName(), bucketName, keyName);
         return fileManagingService.storeFile(file, bucketName, keyName);
     }
 
-    @GetMapping("/fileDownload/{bucketName}/{keyName}")
-    public ResponseEntity downloadFile(@PathVariable String bucketName, @PathVariable String keyName, HttpServletResponse response) {
+    @GetMapping("/fileDownload/{bucketName}/{userId}/{fileName:.+}")
+    public ResponseEntity downloadFile(@PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName, HttpServletResponse response) {
+        String keyName = userId + "/" + fileName;
         log.info("download file bucketName/keyName {} {}", bucketName, keyName);
         try {
             addDownloadResponseHeaders(response, keyName);

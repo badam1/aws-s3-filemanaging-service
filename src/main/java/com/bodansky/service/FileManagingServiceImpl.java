@@ -15,7 +15,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,14 +35,14 @@ public class FileManagingServiceImpl implements IFileManagingService {
     }
 
     @Override
-    public ResponseEntity storeFile(MultipartFile multipartFile, String bucketName, String keyName) {
+    public ResponseEntity storeFile(File file, String bucketName, String keyName) {
         final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
-        if (multipartFile.isEmpty()) {
+        if (file == null) {
             return new ResponseEntity(HttpStatus.NO_CONTENT);
         }
         try {
-            s3.putObject(bucketName, keyName, convertMultipartToFile(multipartFile));
-        } catch (AmazonServiceException | IOException e) {
+            s3.putObject(bucketName, keyName, file);
+        } catch (AmazonServiceException e) {
             log.error(e.getMessage());
             return new ResponseEntity(HttpStatus.NOT_FOUND);
         }
@@ -54,11 +53,5 @@ public class FileManagingServiceImpl implements IFileManagingService {
     public InputStream serveFile(String bucketName, String keyName) throws IOException {
         Resource resource = this.resourceLoader.getResource(S3_PREFIX + bucketName + "/" + keyName);
         return resource.getInputStream();
-    }
-
-    private File convertMultipartToFile(MultipartFile file) throws IOException {
-        File fileToConvert = new File(file.getOriginalFilename());
-        file.transferTo(fileToConvert);
-        return fileToConvert;
     }
 }

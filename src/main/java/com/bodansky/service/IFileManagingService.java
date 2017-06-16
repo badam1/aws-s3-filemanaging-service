@@ -5,14 +5,14 @@ package com.bodansky.service;
  */
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
 public interface IFileManagingService {
 
-    ResponseEntity storeFile(MultipartFile multipartFile, String bucketName, String keyName);
+    ResponseEntity storeFile(File file, String bucketName, String keyName);
 
     InputStream serveFile(String bucketName, String keyName) throws IOException;
 }
