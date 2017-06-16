@@ -7,6 +7,7 @@ package com.bodansky.service;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,13 +37,16 @@ public class FileManagingServiceImpl implements IFileManagingService {
     }
 
     @Override
-    public ResponseEntity storeFile(File file, String bucketName, String keyName) {
+    public ResponseEntity storeFile(@RequestBody File file, String bucketName, String keyName) {
         final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
-        if (file == null) {
-            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        log.info("store file {}", file.getName());
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            log.error(e.getMessage());
         }
         try {
-            s3.putObject(bucketName, keyName, file);
+            s3.putObject(new PutObjectRequest(bucketName, keyName, file));
         } catch (AmazonServiceException e) {
             log.error(e.getMessage());
             return new ResponseEntity(HttpStatus.NOT_FOUND);
