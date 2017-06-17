@@ -28,7 +28,7 @@ public class FileManagingController {
     }
 
     @PostMapping("/fileUpload/{bucketName}/{userId}/{fileName:.+}")
-    public ResponseEntity uploadFile(@RequestBody File file, @PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName) {
+    public ResponseEntity<String> uploadFile(@RequestBody File file, @PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName) {
         String keyName = userId + "/" + fileName;
         log.info("upload file to bucket/keyName {} {} {}", file.getName(), bucketName, keyName);
         return fileManagingService.storeFile(file, bucketName, keyName);

@@ -10,7 +10,7 @@ import java.io.File;
 
 public interface IFileManagingService {
 
-    ResponseEntity storeFile(File file, String bucketName, String keyName);
+    ResponseEntity<String> storeFile(File file, String bucketName, String keyName);
 
     String downLoadFile(String bucketName, String keyName);
 }
