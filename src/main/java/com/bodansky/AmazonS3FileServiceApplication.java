@@ -4,11 +4,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cloud.aws.context.config.annotation.EnableContextResourceLoader;
-import org.springframework.cloud.aws.context.support.io.ResourceLoaderBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 
-@EnableContextResourceLoader
 @SpringBootApplication
 public class AmazonS3FileServiceApplication {
 
@@ -17,12 +14,7 @@ public class AmazonS3FileServiceApplication {
     }
 
     @Bean
-    public static AmazonS3 amazonS3() {
+    public AmazonS3 s3() {
         return AmazonS3ClientBuilder.defaultClient();
-    }
-
-    @Bean
-    public static ResourceLoaderBeanPostProcessor resourceLoaderBeanPostProcessor() {
-        return new ResourceLoaderBeanPostProcessor(amazonS3());
     }
 }
