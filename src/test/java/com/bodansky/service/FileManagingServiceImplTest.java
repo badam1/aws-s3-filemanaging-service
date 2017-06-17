@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -39,7 +40,7 @@ public class FileManagingServiceImplTest {
     }
 
     @Test
-    public void testDownloadFile() throws IOException {
+    public void testServeFile() throws IOException {
         InputStream is = fileManagingService.serveFile("mfm-server-files", "1/test.txt");
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -50,5 +51,12 @@ public class FileManagingServiceImplTest {
         log.info("file {}", sb.toString());
         String fileContent = "Test content";
         assertEquals(fileContent, sb.toString());
+    }
+
+    @Test
+    public void testDownloadFile() throws IOException {
+        Resource resource = fileManagingService.downLoadFile("mfm-server-files", "1/test.txt");
+        log.info("downloaded file name and size {} {}", resource.getFilename(), resource.contentLength());
+        assertEquals(resource.getFilename(), "1/test.txt");
     }
 }

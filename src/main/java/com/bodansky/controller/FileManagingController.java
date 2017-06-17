@@ -9,6 +9,7 @@ import com.bodansky.service.IFileManagingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,7 +39,15 @@ public class FileManagingController {
     }
 
     @GetMapping("/fileDownload/{bucketName}/{userId}/{fileName:.+}")
-    public ResponseEntity downloadFile(@PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName, HttpServletResponse response) {
+    public ResponseEntity<Resource> downloadFile(@PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName) {
+        String keyName = userId + "/" + fileName;
+        log.info("download file bucketName/keyName {} {}", bucketName, keyName);
+        Resource resource = fileManagingService.downLoadFile(bucketName, keyName);
+        return new ResponseEntity<>(resource, HttpStatus.OK);
+    }
+
+    @GetMapping("/fileServe/{bucketName}/{userId}/{fileName:.+}")
+    public ResponseEntity serveFile(@PathVariable String bucketName, @PathVariable String userId, @PathVariable String fileName, HttpServletResponse response) {
         String keyName = userId + "/" + fileName;
         log.info("download file bucketName/keyName {} {}", bucketName, keyName);
         try {

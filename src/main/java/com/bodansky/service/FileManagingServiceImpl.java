@@ -6,8 +6,6 @@ package com.bodansky.service;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,24 +27,19 @@ public class FileManagingServiceImpl implements IFileManagingService {
 
     private static final String S3_PREFIX = "s3://";
     private final ResourceLoader resourceLoader;
-
+    private final AmazonS3 s3;
 
     @Autowired
-    public FileManagingServiceImpl(ResourceLoader resourceLoader) {
+    public FileManagingServiceImpl(ResourceLoader resourceLoader, AmazonS3 s3) {
         this.resourceLoader = resourceLoader;
+        this.s3 = s3;
     }
 
     @Override
     public ResponseEntity storeFile(@RequestBody File file, String bucketName, String keyName) {
-        final AmazonS3 s3 = AmazonS3ClientBuilder.defaultClient();
-        log.info("store file {}", file.getName());
+        log.info("store file {} {}", file.getName(), file.length());
         try {
-            file.createNewFile();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-        try {
-            s3.putObject(new PutObjectRequest(bucketName, keyName, file));
+            s3.putObject(bucketName, keyName, file);
         } catch (AmazonServiceException e) {
             log.error(e.getMessage());
             return new ResponseEntity(HttpStatus.NOT_FOUND);
@@ -55,8 +48,19 @@ public class FileManagingServiceImpl implements IFileManagingService {
     }
 
     @Override
-    public InputStream serveFile(String bucketName, String keyName) throws IOException {
-        Resource resource = this.resourceLoader.getResource(S3_PREFIX + bucketName + "/" + keyName);
-        return resource.getInputStream();
+    public Resource downLoadFile(String bucketName, String keyName) {
+        return resourceLoader.getResource(S3_PREFIX + bucketName + "/" + keyName);
+    }
+
+    @Override
+    public InputStream serveFile(String bucketName, String keyName) {
+        Resource resource = resourceLoader.getResource(S3_PREFIX + bucketName + "/" + keyName);
+        InputStream inputStream = null;
+        try {
+            inputStream = resource.getInputStream();
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+        return inputStream;
     }
 }
